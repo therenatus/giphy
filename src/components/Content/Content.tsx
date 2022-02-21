@@ -7,6 +7,7 @@ import Gif from '../Gif/Gif'
 import Gifs from '../Gifs/Gifs'
 import Navbar from '../Navbar/Navbar'
 import TopHeader from '../TopHeader/TopHeader'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 const MainContent = () => {
 	const [showGifs, setShowGifs] = useState<any>([]);
@@ -40,6 +41,10 @@ const MainContent = () => {
 		setShowGifs([]);
 
 	}
+
+	const loadMore = (num: number) => {
+		setOffset(offset + num);
+	}
 	if(isLoading) return <h1>ddddd</h1>
     return (
 		<div style={{display: 'block'}}>
@@ -47,13 +52,20 @@ const MainContent = () => {
         <Content>
             <Layout className="site-layout-background" hasSider >
                 <Navbar changeCategory={changeCategory} />
-                    <Content style={{ padding: '0 20px 0 200px', height: '100vh', background: '#001529', width:'100vw'}}>
+				<Content style={{ padding: '0 20px 0 200px', height: '100vh', background: '#001529', width:'100vw'}}>
+					<InfiniteScroll
+						dataLength={offset*50}
+						next={() => loadMore(50)}
+						hasMore
+						loader={<h1>Loading....</h1>}
+					>
 						<Routes>
 							<Route index element={<Gifs datas={showGifs}  isLoading={isLoading}/>} />
 							<Route path=':category' element={<Gifs datas={showGifs}  isLoading={isLoading}/>} />
 							<Route path=':category/:id' element={<Gif/>} />
 						</Routes>
-                    </Content>
+					</InfiniteScroll>
+				</Content>
             </Layout>
         </Content>
 		</div>
