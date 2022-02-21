@@ -1,47 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import { Layout } from 'antd';
-import TopHeader from './components/TopHeader/TopHeader';
-import Navbar from './components/Navbar/Navbar';
-import 'antd/dist/antd.css';
-import DataService from './services/service'
-import IFetchData from './types/IFetchData';
+import Gifs from './components/Gifs/Gifs';
+import { Route, Routes, useParams } from 'react-router-dom';
+import {  useGetSearchQuery } from './services/searchApi';
+import Gif from './components/Gif/Gif';
+import MainContent from './components/Content/Content';
 
 const { Content } = Layout;
 
-
-
 const App: React.FC = () => {
-	let state: any;
-    let setState: any;
-    [state, setState] = useState<any>([]);
-    useEffect(() => {
-		DataService.getTrendings()
-			.then((response: any)=>{
-				setState(response.data);
-                
-			})
-	},[])
-
+	const [showGifs, setShowGifs] = useState<any>([]);
+	const [category, setCategory] = useState('');
+	const [offset, setOffset] = useState(0)
+	const [get, setGet] = useState('trending');
+	const {data, isLoading} = useGetSearchQuery({tranding: get, limit: 50, offset: offset, q: category });
+	useEffect(() => {
+		setShowGifs(data?.data)
+	}, [data])	
+	if(isLoading) return <h1>Loading ...</h1>
 	return (
 		<Layout>
-			<TopHeader />
-			<Content >
-				<Layout className="site-layout-background" hasSider>
-					<Navbar />
-					{ console.log(state.data)}
-					<Content style={{ padding: '0 24px', height: '100vh', background: '#001529', paddingLeft: '360px'}}>
-					{
-						state.data?.map((el: any, id: number) => {
-							console.log(el)
-							return (
-								<img width={200} src={el.images.original.url} alt="image" key={id} />
-							)
-						})
-					}
-					</Content>
-				</Layout>
-			</Content>
+			<Routes>
+				<Route path='*' element={<MainContent/>} >
+					<Route index element={<Gifs datas={showGifs}  isLoading={isLoading}/>} />
+					<Route path=':category/:id' element={<Gif/>} />
+					<Route path=':category' element={<Gifs datas={showGifs}  isLoading={isLoading}/>} />
+				</Route>
+			</Routes>
 		</Layout>
 	)
 }

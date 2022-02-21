@@ -1,6 +1,17 @@
 .header {
     position: sticky;
     top: 0;
-    left: 0;
+    left: 100px;
     z-index: 9999;
+    display: flex;
+}
+.logo{
+    width: min-content;
+    display: flex;
+    a{
+        color: blue;
+        color: #fff;
+        letter-spacing: .5em;
+        font-weight: 900;
+    }
 }
